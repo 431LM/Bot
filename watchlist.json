@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "poll_seconds": 60,
+    "ntfy_topic": "",
+    "fee_pct": 0.1,
+    "spread_pct": 0.5,
+    "min_rr": 1.5,
+    "window_minutes": 10
+  },
+  "stocks": [
+    {
+      "ticker": "SNG.DE",
+      "name": "Traumaktie (Beispiel)",
+      "trigger": 1.005,
+      "stop": 0.97,
+      "target": 1.08,
+      "warn_pct": 1.0,
+      "window_minutes": 7,
+      "armed": false,
+      "note": "Q3 gepostet. Zahlen anpassen, dann armed auf true setzen."
+    },
+    {
+      "ticker": "NVDA",
+      "name": "Nvidia (Beispiel)",
+      "trigger": 200.0,
+      "stop": 192.0,
+      "target": 215.0,
+      "warn_pct": 1.0,
+      "armed": false,
+      "note": "Beispielwerte, bitte an den echten Kurs anpassen."
+    }
+  ]
+}

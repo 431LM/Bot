@@ -1,0 +1,55 @@
+name: Waechter
+
+on:
+  schedule:
+    # alle 15 Minuten, Mo-Fr, 07:00-20:45 UTC (deckt deutsche und US-Handelszeiten ab)
+    - cron: "*/15 7-20 * * 1-5"
+    # einmal nach US-Handelsschluss: Tages-Score
+    - cron: "15 21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: waechter
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Pakete installieren
+        run: pip install -r requirements.txt
+
+      - name: Signale pruefen
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python tick.py
+
+      - name: Tages-Score
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '15 21 * * 1-5'
+        run: python catalyst.py
+
+      - name: Protokoll speichern
+        run: |
+          git config user.name "waechter-bot"
+          git config user.email "waechter-bot@users.noreply.github.com"
+          for f in signals_log.csv state.json catalyst_log.csv; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen"
+          else
+            git commit -m "Protokoll $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase
+            git push
+          fi
