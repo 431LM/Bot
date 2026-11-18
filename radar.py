@@ -383,18 +383,209 @@ def cmd_dry():
         print(baue_nachricht(b, spanne, alter, jetzt))
 
 
-def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None):
+# ---------------- Daytrading-Modus (15-Minuten-Fenster) ----------------
+DAY_WINDOW_MIN = 15   # Beobachtungsfenster: danach ist die Chance vorbei
+DAY_TARGET = 2.0      # Ziel  = Kurs + 2 x typische 15-Min-Spanne
+DAY_STOP = 1.0        # Stopp = Kurs - 1 x typische 15-Min-Spanne
+DAY_LIMIT = 0.5       # Einstiegsgrenze = Kurs + halber Weg zum Ziel
+
+
+def day_plan(b, spanne, jetzt_utc):
+    """Ziel/Stopp/Einstiegsgrenze aus der 15-Min-Schwankung (nicht aus der Tagesschwankung)."""
+    sp = spanne if spanne else max(b["atr"] / 5.0, 0.1)
+    sp = max(float(sp), 0.05)
+    k = b["kurs"]
+    return {
+        "spanne": sp,
+        "ziel": k * (1 + DAY_TARGET * sp / 100),
+        "stop": k * (1 - DAY_STOP * sp / 100),
+        "limit": k * (1 + DAY_LIMIT * DAY_TARGET * sp / 100),
+        "ziel_pct": DAY_TARGET * sp,
+        "stop_pct": -DAY_STOP * sp,
+        "ende": jetzt_utc + dt.timedelta(minutes=DAY_WINDOW_MIN),
+    }
+
+
+def baue_daytrade_nachricht(b, plan, alter, jetzt_utc):
+    de = ist_deutsch(b["ticker"])
+    w = "EUR" if de else "USD"
+    von = jetzt_utc.astimezone(TZ_DE).strftime("%H:%M")
+    bis = plan["ende"].astimezone(TZ_DE).strftime("%H:%M")
+    netto = plan["ziel_pct"] - COST_PCT
+    z = []
+    z.append(f"JETZT {DAY_WINDOW_MIN} MIN BEOBACHTEN: {von} bis {bis} Uhr (DE)")
+    z.append(f"Kurs {b['kurs']:.2f} {w} | Punkte {b['score']}/100")
+    z.append("")
+    z.append(f"Einstieg nur bis Kurs {plan['limit']:.2f}. Liegt er schon darueber oder ist es nach {bis} Uhr: Chance verpasst, nicht hinterherrennen.")
+    z.append("")
+    z.append(f"Ziel {plan['ziel']:.2f} (+{plan['ziel_pct']:.2f} %)")
+    z.append(f"Stopp {plan['stop']:.2f} ({plan['stop_pct']:.2f} %)")
+    z.append(f"Nach Kosten (ca. {COST_PCT} %) bleibt beim Ziel {netto:+.2f} % uebrig.")
+    z.append(f"Typische 15-Min-Spanne: {plan['spanne']:.2f} %")
+    z.append("")
+    z.append("Warum:")
+    for p_, m, text in b["gruende"]:
+        z.append(f"- {text} ({p_}/{m})" if m > 0 else f"- {text} ({p_})")
+    z.append("")
+    if alter is not None and alter > 5:
+        z.append(f"ACHTUNG: Daten ca. {alter:.0f} Min alt, Kurs in der Bitpanda-App pruefen.")
+    else:
+        z.append("Kurs vor dem Handeln in der Bitpanda-App pruefen.")
+    z.append("Nach Fensterende kommt eine Auswertung. Kein Finanzrat.")
+    return "\n".join(z)
+
+
+def minuten_daten(ticker):
+    import yfinance as yf
+    d = yf.download(ticker, period="2d", interval="1m", auto_adjust=True, progress=False)
+    if isinstance(d.columns, pd.MultiIndex):
+        d.columns = d.columns.get_level_values(0)
+    d = d.dropna(subset=["Close"])
+    if d.index.tz is None:
+        d.index = d.index.tz_localize("UTC")
+    else:
+        d.index = d.index.tz_convert("UTC")
+    return d
+
+
+def bewerte_fenster(sig, d):
+    """Ziel/Stopp/nichts innerhalb des Fensters. Gibt (ergebnis, hoch%, tief%, ende%) oder None."""
+    start = pd.Timestamp(sig["zeit_utc"])
+    ende = pd.Timestamp(sig["ende_utc"])
+    w = d[(d.index >= start.floor("min")) & (d.index < ende)]
+    if w.empty:
+        return None
+    k = sig["kurs"]
+    erg = "NICHTS"
+    for _, r in w.iterrows():
+        if r["Low"] <= sig["stop"]:
+            erg = "STOPP"
+            break
+        if r["High"] >= sig["ziel"]:
+            erg = "ZIEL"
+            break
+    return (erg, (w["High"].max() / k - 1) * 100, (w["Low"].min() / k - 1) * 100,
+            (w["Close"].iloc[-1] / k - 1) * 100)
+
+
+def nachfass(jetzt_utc, state, push_fn, minuten_fn):
+    """Meldet das Ergebnis jedes Signals, dessen 15-Min-Fenster vorbei ist."""
+    offen, rest = state.get("offen", []), []
+    ergebnisse = state.get("ergebnisse", [])
+    for sig in offen:
+        ende = pd.Timestamp(sig["ende_utc"])
+        alter_min = (pd.Timestamp(jetzt_utc) - ende).total_seconds() / 60
+        if alter_min < 0:
+            rest.append(sig)
+            continue
+        try:
+            d = minuten_fn(sig["ticker"])
+        except Exception as e:  # noqa: BLE001
+            print("Minutendaten fehlen:", sig["ticker"], e)
+            d = None
+        vollstaendig = d is not None and not d.empty and d.index[-1] >= ende - pd.Timedelta(minutes=3)
+        if not vollstaendig and alter_min < 45:
+            rest.append(sig)  # Yahoo hinkt hinterher: naechster Lauf probiert es noch einmal
+            continue
+        res = bewerte_fenster(sig, d) if d is not None and not d.empty else None
+        if res is None:
+            print("Keine Daten fuer Auswertung:", sig["ticker"])
+            continue
+        erg, hoch, tief, end_pct = res
+        pct = {"ZIEL": sig["ziel_pct"], "STOPP": sig["stop_pct"], "NICHTS": end_pct}[erg]
+        netto = pct - COST_PCT
+        ergebnisse.append({
+            "zeit_de": sig["zeit_de"], "ticker": sig["ticker"], "score": sig["score"],
+            "relvol": sig["relvol"], "ziel_pct": round(sig["ziel_pct"], 3),
+            "stop_pct": round(sig["stop_pct"], 3), "ergebnis": erg, "pct": round(pct, 3),
+            "netto": round(netto, 3), "hoch": round(hoch, 3), "tief": round(tief, 3),
+            "unvollstaendig": (not vollstaendig),
+        })
+        wort = {"ZIEL": "Ziel wurde erreicht", "STOPP": "Stopp wurde ausgeloest",
+                "NICHTS": "weder Ziel noch Stopp"}[erg]
+        text = (f"{sig['ticker']}: {wort}.\n"
+                f"Fenster {sig['zeit_de'][11:16]} Uhr + {DAY_WINDOW_MIN} Min, Kurs bei Meldung {sig['kurs']:.2f}.\n"
+                f"Hoch {hoch:+.2f} %, Tief {tief:+.2f} %, Ende {end_pct:+.2f} %.\n"
+                f"Ergebnis nach Kosten (ca. {COST_PCT} %): {netto:+.2f} %.\n"
+                f"Fenster ist zu. Chance verpasst, nicht mehr hinterherrennen."
+                + ("\n(Daten unvollstaendig)" if not vollstaendig else ""))
+        print("\n" + text + "\n")
+        push_fn(f"Fenster vorbei: {sig['ticker']} {erg}", text, "default")
+    state["offen"] = rest
+    state["ergebnisse"] = ergebnisse[-300:]
+    return state
+
+
+def baue_tagesbericht_day(state, heute_de):
+    erg = state.get("ergebnisse", [])
+    offen = len(state.get("offen", []))
+    heute = [e for e in erg if str(e["zeit_de"]).startswith(heute_de)]
+    z = [f"Tagesbericht {heute_de}", ""]
+    if heute:
+        z.append(f"HEUTE {len(heute)} ausgewertete Meldung(en):")
+        for e in heute:
+            z.append(f"- {e['ticker']} {int(e['score'])} Pkt, {str(e['zeit_de'])[11:16]} Uhr: {e['ergebnis']}, nach Kosten {e['netto']:+.2f} %")
+    else:
+        z.append("HEUTE keine ausgewertete Meldung.")
+    if offen:
+        z.append(f"({offen} Meldung(en) noch im Fenster oder in Auswertung)")
+    n = len(erg)
+    if n:
+        ziele = sum(1 for e in erg if e["ergebnis"] == "ZIEL")
+        stopps = sum(1 for e in erg if e["ergebnis"] == "STOPP")
+        nichts = n - ziele - stopps
+        schnitt = sum(e["netto"] for e in erg) / n
+        z += ["", f"GESAMT {n} Meldungen: Ziel {ziele}, Stopp {stopps}, nichts {nichts}.",
+              f"Trefferquote (Ziel zuerst): {ziele / n * 100:.0f} %.",
+              f"Schnitt pro Meldung nach Kosten: {schnitt:+.2f} %.",
+              f"Break-even vor Kosten: {DAY_STOP / (DAY_STOP + DAY_TARGET) * 100:.0f} % Trefferquote."]
+    else:
+        z += ["", "GESAMT noch keine ausgewerteten Meldungen."]
+    z += ["", "VERBESSERUNG:"]
+    if n < 10:
+        z.append(f"- Erst {n} Faelle: zu wenig, um etwas abzuleiten (ab ca. 30 aussagekraeftig).")
+    else:
+        def grp(name, hoch, tief):
+            if len(hoch) >= 4 and len(tief) >= 4:
+                q = lambda g: sum(1 for e in g if e["ergebnis"] == "ZIEL") / len(g) * 100
+                m = lambda g: sum(e["netto"] for e in g) / len(g)
+                z.append(f"- {name}: hoch {q(hoch):.0f} % / {m(hoch):+.2f} % ({len(hoch)}) vs. niedrig {q(tief):.0f} % / {m(tief):+.2f} % ({len(tief)})")
+        grp("Punkte ab 70", [e for e in erg if e["score"] >= 70], [e for e in erg if e["score"] < 70])
+        grp("Volumen ab 1,0x", [e for e in erg if e["relvol"] >= 1.0], [e for e in erg if e["relvol"] < 1.0])
+        if z[-1] == "VERBESSERUNG:":
+            z.append("- Noch keine Untergruppe mit genug Faellen.")
+    z += ["", "Nur Beobachtung, kein Finanzrat."]
+    return "\n".join(z)
+
+
+def cmd_daily_day():
+    heute_de = dt.datetime.now(TZ_DE).strftime("%Y-%m-%d")
+    text = baue_tagesbericht_day(lade_state(), heute_de)
+    print(text)
+    sende_push("Radar Tagesbericht", text)
+
+
+def cmd_report_day():
+    print(baue_tagesbericht_day(lade_state(), dt.datetime.now(TZ_DE).strftime("%Y-%m-%d")))
+
+
+def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None, minuten_fn=None):
     jetzt = jetzt or dt.datetime.now(dt.timezone.utc)
     push_fn = push_fn or sende_push
     intraday_fn = intraday_fn or intraday_info
-    erg = scan(jetzt, nur_offene=True, tagesdaten_fn=tagesdaten_fn)
-    if not erg:
-        return
-    zeige_top(erg, 5)
     state = lade_state()
+    try:
+        state = nachfass(jetzt, state, push_fn, minuten_fn or minuten_daten)
+    except Exception as e:  # noqa: BLE001
+        print("Nachfass-Fehler:", e)
+    erg = scan(jetzt, nur_offene=True, tagesdaten_fn=tagesdaten_fn)
     heute = jetzt.astimezone(TZ_DE).strftime("%Y-%m-%d")
     tag = state.get(heute, {"pushed": [], "count": 0})
-    state = {heute: tag}  # alte Tage verwerfen
+    state = {heute: tag, "offen": state.get("offen", []), "ergebnisse": state.get("ergebnisse", [])}
+    if not erg:
+        speichere_state(state)
+        return
+    zeige_top(erg, 5)
     if tag["count"] >= MAX_PUSH_PER_DAY:
         print("Tageslimit fuer Meldungen erreicht.")
         speichere_state(state)
@@ -405,14 +596,26 @@ def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None):
         speichere_state(state)
         return
     spanne, alter = intraday_fn(kandidat["ticker"], jetzt)
-    text = baue_nachricht(kandidat, spanne, alter, jetzt)
-    titel = f"Radar: {kandidat['ticker']} {kandidat['score']}/100"
+    plan = day_plan(kandidat, spanne, jetzt)
+    text = baue_daytrade_nachricht(kandidat, plan, alter, jetzt)
+    titel = f"Radar: {kandidat['ticker']} {kandidat['score']}/100 - 15 Min!"
     print("\n" + titel + "\n" + text + "\n")
     ok = push_fn(titel, text, "high" if kandidat["score"] >= 75 else "default")
-    protokolliere(kandidat, alter, ok, jetzt)
+    log_b = dict(kandidat, stop=plan["stop"], ziel=plan["ziel"])
+    protokolliere(log_b, alter, ok, jetzt)
     tag["pushed"].append(kandidat["ticker"])
     tag["count"] += 1
+    if ok:
+        state["offen"].append({
+            "ticker": kandidat["ticker"], "kurs": kandidat["kurs"], "score": kandidat["score"],
+            "relvol": kandidat["relvol"], "ziel": plan["ziel"], "stop": plan["stop"],
+            "ziel_pct": plan["ziel_pct"], "stop_pct": plan["stop_pct"],
+            "zeit_utc": jetzt.strftime("%Y-%m-%d %H:%M:%S+00:00"),
+            "zeit_de": jetzt.astimezone(TZ_DE).strftime("%Y-%m-%d %H:%M:%S"),
+            "ende_utc": plan["ende"].strftime("%Y-%m-%d %H:%M:%S+00:00"),
+        })
     speichere_state(state)
+
 
 
 def cmd_test():
@@ -579,8 +782,10 @@ if __name__ == "__main__":
     elif arg == "run":
         cmd_run()
     elif arg == "report":
+        cmd_report_day()
+    elif arg == "report_alt":
         cmd_report()
     elif arg == "daily":
-        cmd_daily()
+        cmd_daily_day()
     else:
         print(__doc__)
