@@ -1,3 +1,5 @@
+ls
+mv -f user_data/strategies/radar_2.py radar.py
 #!/usr/bin/env python3
 """
 radar.py - waehlt bei jedem Lauf die Aktie, die nach dem Punktesystem des
@@ -473,6 +475,103 @@ def cmd_report():
     print("Unter ca. 30 abgeschlossenen Faellen ist die Quote vor allem Zufall.")
 
 
+# ---------------- Tagesbericht (Push) ----------------
+def auswerten(df):
+    """Wie cmd_report, aber gibt die Ergebnisse zurueck: Liste von (Zeile, Status, Prozent)."""
+    import yfinance as yf
+    ergebnisse = []
+    for _, z in df.iterrows():
+        start = pd.Timestamp(z["zeit_utc"], tz="UTC")
+        try:
+            d = yf.download(z["ticker"], start=(start - pd.Timedelta(days=1)).strftime("%Y-%m-%d"),
+                            interval="15m", auto_adjust=True, progress=False)
+            if isinstance(d.columns, pd.MultiIndex):
+                d.columns = d.columns.get_level_values(0)
+            d = d.dropna(subset=["Close"])
+            if d.index.tz is None:
+                d.index = d.index.tz_localize("UTC")
+            d = d[d.index > start]
+        except Exception as e:  # noqa: BLE001
+            print("Daten fehlen fuer", z["ticker"], e)
+            continue
+        if d.empty:
+            ergebnisse.append((z, "offen", float("nan")))
+            continue
+        d = d[d.index <= start + pd.Timedelta(days=HORIZON_DAYS + 2)]
+        status, res = "offen", (d["Close"].iloc[-1] / z["kurs"] - 1) * 100
+        for _, k in d.iterrows():
+            if k["Low"] <= z["stop"]:
+                status, res = "Stopp", (z["stop"] / z["kurs"] - 1) * 100
+                break
+            if k["High"] >= z["ziel"]:
+                status, res = "Ziel", (z["ziel"] / z["kurs"] - 1) * 100
+                break
+        ergebnisse.append((z, status, res))
+    return ergebnisse
+
+
+def quote(erg):
+    ziele = sum(1 for _, s, _ in erg if s == "Ziel")
+    stopps = sum(1 for _, s, _ in erg if s == "Stopp")
+    n = ziele + stopps
+    return ziele, stopps, n, (ziele / n * 100 if n else None)
+
+
+def hinweise(erg):
+    """Verbesserungshinweise - nur wenn genug abgeschlossene Faelle da sind."""
+    _, _, n, _ = quote(erg)
+    if n < 10:
+        return [f"Erst {n} abgeschlossene Faelle: noch zu wenig, um etwas abzuleiten (ab ca. 30 aussagekraeftig)."]
+    out = []
+    def vergleich(name, hoch, tief):
+        zh, sh, nh, qh = quote(hoch)
+        zt, st, nt, qt = quote(tief)
+        if nh >= 4 and nt >= 4:
+            out.append(f"{name}: hoch {qh:.0f} % ({nh}) vs. niedrig {qt:.0f} % ({nt})")
+    vergleich("Punkte ab 70", [e for e in erg if e[0]["score"] >= 70], [e for e in erg if e[0]["score"] < 70])
+    vergleich("Volumen ab 1,0x", [e for e in erg if e[0]["relvol"] >= 1.0], [e for e in erg if e[0]["relvol"] < 1.0])
+    if not out:
+        out.append("Noch keine Untergruppe mit genug Faellen fuer einen Vergleich.")
+    return out
+
+
+def baue_tagesbericht(erg, heute_de):
+    heute = [e for e in erg if str(e[0]["zeit_de"]).startswith(heute_de)]
+    zeilen = [f"Tagesbericht {heute_de}", ""]
+    if heute:
+        zeilen.append(f"HEUTE {len(heute)} Meldung(en):")
+        for z, s, r in heute:
+            rr = "k.A." if pd.isna(r) else f"{r:+.1f} %"
+            zeilen.append(f"- {z['ticker']} {int(z['score'])} Pkt, {str(z['zeit_de'])[11:16]} Uhr, Kurs {z['kurs']:.2f}: {s} ({rr})")
+    else:
+        zeilen.append("HEUTE keine Meldung (kein Wert hatte 60+ Punkte oder Boerse zu).")
+    ziele, stopps, n, q = quote(erg)
+    offen = sum(1 for _, s, _ in erg if s == "offen")
+    zeilen += ["", f"GESAMT {len(erg)} Signale: Ziel {ziele}, Stopp {stopps}, offen {offen}."]
+    if q is not None:
+        zeilen.append(f"Trefferquote: {q:.0f} % ({n} abgeschlossene Faelle).")
+    else:
+        zeilen.append("Trefferquote: noch keine abgeschlossenen Faelle.")
+    zeilen.append(f"Break-even: {STOP_ATR / (STOP_ATR + TARGET_ATR) * 100:.0f} % (vor Kosten).")
+    zeilen += ["", "VERBESSERUNG:"] + [f"- {h}" for h in hinweise(erg)]
+    zeilen += ["", "Nur Beobachtung, kein Finanzrat."]
+    return "\n".join(zeilen)
+
+
+def cmd_daily():
+    if not os.path.exists(LOG):
+        sende_push("Radar Tagesbericht", "Noch kein Protokoll. Heute gab es keine Meldung.")
+        return
+    df = pd.read_csv(LOG)
+    if df.empty:
+        sende_push("Radar Tagesbericht", "Protokoll ist leer. Noch keine Meldungen.")
+        return
+    heute_de = dt.datetime.now(TZ_DE).strftime("%Y-%m-%d")
+    text = baue_tagesbericht(auswerten(df), heute_de)
+    print(text)
+    sende_push("Radar Tagesbericht", text)
+
+
 if __name__ == "__main__":
     arg = sys.argv[1] if len(sys.argv) > 1 else "dry"
     if arg == "dry":
@@ -483,5 +582,7 @@ if __name__ == "__main__":
         cmd_run()
     elif arg == "report":
         cmd_report()
+    elif arg == "daily":
+        cmd_daily()
     else:
         print(__doc__)

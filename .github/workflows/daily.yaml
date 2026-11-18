@@ -1,0 +1,29 @@
+name: Tagesbericht
+
+on:
+  schedule:
+    # Mo-Fr 21:30 UTC = 22:30 Uhr deutsche Zeit (nach US-Schluss)
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bericht:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pakete installieren
+        run: pip install yfinance pandas numpy
+
+      - name: Tagesbericht senden
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python radar.py daily
