@@ -512,7 +512,7 @@ def nachfass(jetzt_utc, state, push_fn, minuten_fn):
         print("\n" + text + "\n")
         push_fn(f"Fenster vorbei: {sig['ticker']} {erg}", text, "default")
     state["offen"] = rest
-    state["ergebnisse"] = ergebnisse[-300:]
+    state["ergebnisse"] = ergebnisse[-5000:]
     return state
 
 
