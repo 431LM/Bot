@@ -1,5 +1,4 @@
 ls
-mv -f user_data/strategies/radar_2.py radar.py
 #!/usr/bin/env python3
 """
 radar.py - waehlt bei jedem Lauf die Aktie, die nach dem Punktesystem des
