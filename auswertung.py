@@ -39,6 +39,9 @@ df["zeit"] = pd.to_datetime(df["zeit_de"])
 df["stunde"] = df["zeit"].dt.hour
 df["markt"] = df["ticker"].str.endswith(".DE").map({True: "DE", False: "US"})
 df["treffer"] = df["ergebnis"] == "ZIEL"
+if "typ" not in df:
+    df["typ"] = "NORMAL"
+df["typ"] = df["typ"].fillna("NORMAL")
 
 n = len(df)
 k = int(df["treffer"].sum())
@@ -77,6 +80,7 @@ def gruppe(titel, spalte, bins=None, labels=None):
 gruppe("PUNKTE", "score", [60, 70, 80, 101], ["60-69", "70-79", "80+"])
 gruppe("VOLUMEN", "relvol", [0, 1, 2, 99], ["<1x", "1-2x", "2x+"])
 gruppe("UHRZEIT (DE)", "stunde")
+gruppe("TYP", "typ")
 gruppe("MARKT", "markt")
 print("\nHinweis: Gruppen mit wenig Faellen sind Zufall. Erst ab ca. 100 Faellen insgesamt")
 print("und 30 pro Gruppe etwas daraus ableiten, sonst jagst du Rauschen.")

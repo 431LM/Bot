@@ -496,6 +496,7 @@ def nachfass(jetzt_utc, state, push_fn, minuten_fn):
         netto = pct - COST_PCT
         ergebnisse.append({
             "zeit_de": sig["zeit_de"], "ticker": sig["ticker"], "score": sig["score"],
+            "typ": sig.get("typ", "NORMAL"),
             "relvol": sig["relvol"], "ziel_pct": round(sig["ziel_pct"], 3),
             "stop_pct": round(sig["stop_pct"], 3), "ergebnis": erg, "pct": round(pct, 3),
             "netto": round(netto, 3), "hoch": round(hoch, 3), "tief": round(tief, 3),
@@ -569,7 +570,7 @@ def cmd_report_day():
     print(baue_tagesbericht_day(lade_state(), dt.datetime.now(TZ_DE).strftime("%Y-%m-%d")))
 
 
-def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None, minuten_fn=None):
+def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None, minuten_fn=None, explosion_fn=None):
     jetzt = jetzt or dt.datetime.now(dt.timezone.utc)
     push_fn = push_fn or sende_push
     intraday_fn = intraday_fn or intraday_info
@@ -582,6 +583,10 @@ def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None, minu
     heute = jetzt.astimezone(TZ_DE).strftime("%Y-%m-%d")
     tag = state.get(heute, {"pushed": [], "count": 0})
     state = {heute: tag, "offen": state.get("offen", []), "ergebnisse": state.get("ergebnisse", [])}
+    try:
+        explosion_lauf(jetzt, state, tag, push_fn, explosion_fn)
+    except Exception as e:  # noqa: BLE001
+        print("Explosions-Fehler:", e)
     if not erg:
         speichere_state(state)
         return
@@ -616,6 +621,123 @@ def cmd_run(jetzt=None, tagesdaten_fn=None, intraday_fn=None, push_fn=None, minu
         })
     speichere_state(state)
 
+
+
+# ---------------- Explosions-Modus (5-Minuten-Kerzen) ----------------
+EXP_VOL = 3.0         # Volumen der letzten 15 Min mindestens 3x normal (gleiche Tageszeit)
+EXP_MOVE = 1.5        # Kursplus der letzten 15 Min mindestens 1,5x typische 15-Min-Spanne
+EXP_MIN_MOVE = 0.3    # und mindestens 0,3 % (sonst nur Rauschen)
+EXP_MAX_AGE = 12      # Daten hoechstens so viele Minuten alt
+EXP_MAX_PER_DAY = 3   # hoechstens so viele Explosions-Meldungen pro Tag
+
+
+def explosion_daten(tickers):
+    import yfinance as yf
+    d = yf.download(tickers, period="5d", interval="5m", group_by="ticker",
+                    auto_adjust=True, progress=False, threads=True)
+    return zerlege(d, tickers)
+
+
+def explosion_pruefe(df, jetzt_utc):
+    """Gibt ein dict zurueck, wenn die letzten 15 Min wie ein Ausbruch aussehen, sonst None."""
+    df = df.dropna(subset=["Close", "High", "Low", "Volume"])
+    if len(df) < 40:
+        return None
+    if df.index.tz is None:
+        df = df.tz_localize("UTC")
+    letzte = df.index[-1].tz_convert("UTC").to_pydatetime()
+    alter = (jetzt_utc - letzte).total_seconds() / 60 - 5   # Kerze traegt die Startzeit
+    if alter > EXP_MAX_AGE:
+        return None
+    c, v = df["Close"], df["Volume"]
+    k = float(c.iloc[-1])
+    if k <= 0:
+        return None
+    move = (k / float(c.iloc[-4]) - 1) * 100
+    r15 = (df["High"].rolling(3).max() - df["Low"].rolling(3).min()) / c * 100
+    typ = float(r15.iloc[:-3].median())
+    if not typ > 0:
+        return None
+    v15 = v.rolling(3).sum()
+    alt = v15.iloc[:-3]
+    zeiten = df.index[:-3]
+    heute_t, heute_d = df.index[-1].time(), df.index[-1].date()
+    gleich = alt[np.array([z.time() == heute_t and z.date() < heute_d for z in zeiten])]
+    norm = float(gleich.median()) if len(gleich) >= 2 else float(alt.median())
+    if not norm > 0:
+        return None
+    relvol = float(v15.iloc[-1]) / norm
+    hoch30 = float(df["High"].iloc[-9:-3].max())
+    if not (relvol >= EXP_VOL and move >= EXP_MIN_MOVE and move >= EXP_MOVE * typ and k > hoch30):
+        return None
+    ver = move / typ
+    return {"kurs": k, "relvol": relvol, "move": move, "typ": typ, "verhaeltnis": ver,
+            "hoch30": hoch30, "alter": max(0.0, alter), "atr": typ * 5,
+            "score": int(min(99, 30 + 8 * min(relvol, 6) + 8 * min(ver, 5)))}
+
+
+def baue_explosion_nachricht(t, e, plan, jetzt_utc):
+    w = "EUR" if ist_deutsch(t) else "USD"
+    von = jetzt_utc.astimezone(TZ_DE).strftime("%H:%M")
+    bis = plan["ende"].astimezone(TZ_DE).strftime("%H:%M")
+    netto = plan["ziel_pct"] - COST_PCT
+    z = [f"EXPLOSION? JETZT {DAY_WINDOW_MIN} MIN BEOBACHTEN: {von} bis {bis} Uhr (DE)",
+         f"{t} Kurs {e['kurs']:.2f} {w}",
+         f"Volumen {e['relvol']:.1f}x normal, {e['move']:+.2f} % in 15 Min (normal ca. {e['typ']:.2f} %).",
+         f"Kurs ueber dem 30-Min-Hoch ({e['hoch30']:.2f}).",
+         "",
+         f"Einstieg nur bis Kurs {plan['limit']:.2f}. Liegt er schon darueber oder ist es nach {bis} Uhr: Chance verpasst, nicht hinterherrennen.",
+         f"Ziel {plan['ziel']:.2f} (+{plan['ziel_pct']:.2f} %), Stopp {plan['stop']:.2f} ({plan['stop_pct']:.2f} %).",
+         f"Nach Kosten (ca. {COST_PCT} %) bleibt beim Ziel {netto:+.2f} % uebrig.",
+         "",
+         f"ACHTUNG: Daten ca. {e['alter']:.0f} Min alt, die Bewegung laeuft schon. Kurs in der Bitpanda-App pruefen.",
+         "Nach Fensterende kommt eine Auswertung. Kein Finanzrat."]
+    return "\n".join(z)
+
+
+def explosion_lauf(jetzt, state, tag, push_fn, daten_fn=None):
+    de, us = offene_maerkte(jetzt)
+    tickers = [t for t in lade_universum() if (ist_deutsch(t) and de) or (not ist_deutsch(t) and us)]
+    if not tickers:
+        return
+    if tag.get("exp_count", 0) >= EXP_MAX_PER_DAY:
+        print("Explosions-Limit fuer heute erreicht.")
+        return
+    daten = (daten_fn or explosion_daten)(tickers)
+    belegt = set(tag.get("exp_pushed", [])) | {s["ticker"] for s in state.get("offen", [])}
+    treffer = []
+    for t, df in daten.items():
+        if t in belegt:
+            continue
+        try:
+            e = explosion_pruefe(df, jetzt)
+        except Exception as ex:  # noqa: BLE001
+            print("Explosions-Fehler bei", t, ex)
+            continue
+        if e:
+            treffer.append((t, e))
+    print(f"Explosions-Check: {len(daten)} Werte geprueft, {len(treffer)} Treffer.")
+    if not treffer:
+        return
+    treffer.sort(key=lambda x: x[1]["relvol"] * x[1]["verhaeltnis"], reverse=True)
+    t, e = treffer[0]
+    b = {"ticker": t, "kurs": e["kurs"], "atr": e["atr"], "score": e["score"], "relvol": e["relvol"]}
+    plan = day_plan(b, e["typ"], jetzt)
+    text = baue_explosion_nachricht(t, e, plan, jetzt)
+    titel = f"EXPLOSION: {t} {e['relvol']:.1f}x Volumen - 15 Min!"
+    print("\n" + titel + "\n" + text + "\n")
+    ok = push_fn(titel, text, "high")
+    tag["exp_count"] = tag.get("exp_count", 0) + 1
+    tag.setdefault("exp_pushed", []).append(t)
+    if ok:
+        state.setdefault("offen", []).append({
+            "typ": "EXPLOSION", "ticker": t, "kurs": e["kurs"], "score": e["score"],
+            "relvol": e["relvol"], "ziel": plan["ziel"], "stop": plan["stop"],
+            "ziel_pct": plan["ziel_pct"], "stop_pct": plan["stop_pct"],
+            "zeit_utc": jetzt.strftime("%Y-%m-%d %H:%M:%S+00:00"),
+            "zeit_de": jetzt.astimezone(TZ_DE).strftime("%Y-%m-%d %H:%M:%S"),
+            "ende_utc": plan["ende"].strftime("%Y-%m-%d %H:%M:%S+00:00"),
+        })
 
 
 def cmd_test():
