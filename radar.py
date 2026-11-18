@@ -1,4 +1,3 @@
-ls
 #!/usr/bin/env python3
 """
 radar.py - waehlt bei jedem Lauf die Aktie, die nach dem Punktesystem des
