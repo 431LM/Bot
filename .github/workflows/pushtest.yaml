@@ -1,0 +1,20 @@
+name: Pushtest
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Push senden
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          if [ -z "$NTFY_TOPIC" ]; then
+            echo "Secret NTFY_TOPIC fehlt oder ist leer"
+            exit 1
+          fi
+          curl -sf -H "Title: Waechter Test" -d "Push funktioniert" "https://ntfy.sh/$NTFY_TOPIC"
+          echo "Gesendet"
