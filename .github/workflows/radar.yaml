@@ -1,0 +1,48 @@
+name: Radar
+
+on:
+  schedule:
+    # alle 15 Minuten, Mo-Fr, 07:00-21:45 UTC (deckt deutsche und US-Handelszeiten ab)
+    - cron: "*/15 7-21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pakete installieren
+        run: pip install yfinance pandas numpy
+
+      - name: Radar laufen lassen
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python radar.py run
+
+      - name: Protokoll speichern
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add radar_log.csv radar_state.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Nichts zu speichern"
+          else
+            git commit -m "Radar-Protokoll"
+            for i in 1 2 3; do
+              git pull --rebase && git push && break
+              sleep 5
+            done
+          fi
