@@ -32,3 +32,23 @@ date,ticker,score,max,price,reasons
 2026-11-18,SMCI,1,8,24.37,"Short-Anteil 12.7 % vom Float; Days to Cover 2.1; Float 560 Mio. Aktien; Volumen 0.6x; kein Ausbruch; Quartalszahlen in 76 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
 2026-11-18,ARM,1,8,182.76,"Short-Anteil 10.7 % vom Float; Days to Cover 3.3; Float 145 Mio. Aktien; Volumen 0.7x; kein Ausbruch; Quartalszahlen in 77 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
 2026-11-18,UBER,0,8,68.76,"Short-Anteil 2.3 % vom Float; Days to Cover 2.8; Float 2036 Mio. Aktien; Volumen 0.6x; kein Ausbruch; Quartalszahlen in 77 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,SNG.DE,1,3,17.3,Float 8 Mio. Aktien; Volumen 0.8x; kein Ausbruch
+2026-11-19,NVDA,0,7,145.98,"Short-Anteil 1.2 % vom Float; Days to Cover 2.7; Float 23140 Mio. Aktien; Volumen 1.2x; kein Ausbruch; Analysten 30 Tage: 0 hoch, 9 runter"
+2026-11-19,AMD,1,8,489.19,"Short-Anteil 2.4 % vom Float; Days to Cover 1.9; Float 1631 Mio. Aktien; Volumen 1.9x; kein Ausbruch; Quartalszahlen in 75 Tagen; Analysten 30 Tage: 2 hoch, 0 runter"
+2026-11-19,TSLA,1,8,374.41,"Short-Anteil 2.0 % vom Float; Days to Cover 1.8; Float 2822 Mio. Aktien; Volumen 0.7x; kein Ausbruch; Quartalszahlen in 69 Tagen; Analysten 30 Tage: 3 hoch, 0 runter"
+2026-11-19,PLTR,0,8,153.68,"Short-Anteil 2.6 % vom Float; Days to Cover 2.5; Float 2116 Mio. Aktien; Volumen 0.9x; kein Ausbruch; Quartalszahlen in 74 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,AAPL,1,8,349.21,"Short-Anteil 1.0 % vom Float; Days to Cover 3.6; Float 14508 Mio. Aktien; Volumen 0.8x; kein Ausbruch; Quartalszahlen in 70 Tagen; Analysten 30 Tage: 1 hoch, 0 runter"
+2026-11-19,MSFT,0,8,498.3,"Short-Anteil 0.8 % vom Float; Days to Cover 2.8; Float 7416 Mio. Aktien; Volumen 1.0x; kein Ausbruch; Quartalszahlen in 69 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,META,0,8,596.22,"Short-Anteil 3.4 % vom Float; Days to Cover 3.4; Float 2211 Mio. Aktien; Volumen 0.7x; kein Ausbruch; Quartalszahlen in 69 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,AMZN,0,7,257.37,"Short-Anteil 1.0 % vom Float; Days to Cover 2.3; Float 9839 Mio. Aktien; Volumen 1.0x; kein Ausbruch; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,SAP.DE,0,3,187.02,Float 1088 Mio. Aktien; Volumen 1.7x; kein Ausbruch
+2026-11-19,SIE.DE,0,4,266.9,Float 771 Mio. Aktien; Volumen 0.7x; kein Ausbruch; Quartalszahlen in 84 Tagen
+2026-11-19,RHM.DE,1,3,725.6,Float 47 Mio. Aktien; Volumen 0.9x; kein Ausbruch
+2026-11-19,ALV.DE,0,3,457.5,Float 374 Mio. Aktien; Volumen 0.8x; kein Ausbruch
+2026-11-19,AIR.DE,0,3,198.22,Float 704 Mio. Aktien; Volumen 0.8x; kein Ausbruch
+2026-11-19,IFX.DE,0,4,49.345,Float 1301 Mio. Aktien; Volumen 0.7x; kein Ausbruch; Quartalszahlen in 76 Tagen
+2026-11-19,COIN,1,7,108.87,"Short-Anteil 10.3 % vom Float; Days to Cover 2.8; Float 221 Mio. Aktien; Volumen 0.9x; kein Ausbruch; Analysten 30 Tage: 0 hoch, 1 runter"
+2026-11-19,MSTR,0,7,86.13,"Short-Anteil 6.7 % vom Float; Days to Cover 1.4; Float 402 Mio. Aktien; Volumen 1.3x; kein Ausbruch; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,SMCI,1,8,23.84,"Short-Anteil 12.7 % vom Float; Days to Cover 2.1; Float 560 Mio. Aktien; Volumen 0.8x; kein Ausbruch; Quartalszahlen in 75 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,ARM,1,8,177.17,"Short-Anteil 10.7 % vom Float; Days to Cover 3.3; Float 145 Mio. Aktien; Volumen 0.6x; kein Ausbruch; Quartalszahlen in 76 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-19,UBER,0,8,65.6,"Short-Anteil 2.3 % vom Float; Days to Cover 2.8; Float 2036 Mio. Aktien; Volumen 1.5x; kein Ausbruch; Quartalszahlen in 76 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
