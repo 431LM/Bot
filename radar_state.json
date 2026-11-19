@@ -12,35 +12,7 @@
    "PANW"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "PANW",
-   "kurs": 362.1650085449219,
-   "score": 99,
-   "relvol": 4.285110183974202,
-   "ziel": 367.75297582720043,
-   "stop": 359.3710249037826,
-   "ziel_pct": 1.5429340633236428,
-   "stop_pct": -0.7714670316618214,
-   "zeit_utc": "2026-11-19 14:38:11+00:00",
-   "zeit_de": "2026-11-19 15:38:11",
-   "ende_utc": "2026-11-19 14:53:11+00:00"
-  },
-  {
-   "ticker": "TTWO",
-   "kurs": 216.25,
-   "score": 75,
-   "relvol": 2.6393020552188045,
-   "ziel": 219.9389655051834,
-   "stop": 214.40551724740828,
-   "ziel_pct": 1.7058800023969518,
-   "stop_pct": -0.8529400011984759,
-   "zeit_utc": "2026-11-19 14:38:11+00:00",
-   "zeit_de": "2026-11-19 15:38:11",
-   "ende_utc": "2026-11-19 14:53:11+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -85,6 +57,36 @@
    "netto": -1.04,
    "hoch": -0.17,
    "tief": -0.34,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-19 15:38:11",
+   "ticker": "PANW",
+   "score": 99,
+   "typ": "EXPLOSION",
+   "relvol": 4.285110183974202,
+   "ziel_pct": 1.543,
+   "stop_pct": -0.771,
+   "ergebnis": "ZIEL",
+   "pct": 1.543,
+   "netto": 0.843,
+   "hoch": 1.755,
+   "tief": -0.628,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-19 15:38:11",
+   "ticker": "TTWO",
+   "score": 75,
+   "typ": "NORMAL",
+   "relvol": 2.6393020552188045,
+   "ziel_pct": 1.706,
+   "stop_pct": -0.853,
+   "ergebnis": "STOPP",
+   "pct": -0.853,
+   "netto": -1.553,
+   "hoch": 0.726,
+   "tief": -3.542,
    "unvollstaendig": false
   }
  ]
