@@ -7,24 +7,26 @@
    "GME"
   ],
   "count": 4,
-  "exp_count": 1,
+  "exp_count": 2,
   "exp_pushed": [
-   "SZG.DE"
+   "SZG.DE",
+   "ROST"
   ]
  },
  "offen": [
   {
-   "ticker": "GME",
-   "kurs": 27.07830047607422,
-   "score": 82,
-   "relvol": 2.0619172134897,
-   "ziel": 27.533288953127578,
-   "stop": 26.85080623754754,
-   "ziel_pct": 1.6802696958598786,
-   "stop_pct": -0.8401348479299393,
-   "zeit_utc": "2026-11-20 16:21:02+00:00",
-   "zeit_de": "2026-11-20 17:21:02",
-   "ende_utc": "2026-11-20 16:36:02+00:00"
+   "typ": "EXPLOSION",
+   "ticker": "ROST",
+   "kurs": 215.9600067138672,
+   "score": 70,
+   "relvol": 3.186053319604696,
+   "ziel": 217.83610265214048,
+   "stop": 215.02195874473054,
+   "ziel_pct": 0.8687237821579624,
+   "stop_pct": -0.4343618910789812,
+   "zeit_utc": "2026-11-20 17:21:59+00:00",
+   "zeit_de": "2026-11-20 18:21:59",
+   "ende_utc": "2026-11-20 17:36:59+00:00"
   }
  ],
  "ergebnisse": [
@@ -176,6 +178,21 @@
    "netto": -0.265,
    "hoch": 0.464,
    "tief": 0.0,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-20 17:21:02",
+   "ticker": "GME",
+   "score": 82,
+   "typ": "NORMAL",
+   "relvol": 2.0619172134897,
+   "ziel_pct": 1.68,
+   "stop_pct": -0.84,
+   "ergebnis": "STOPP",
+   "pct": -0.84,
+   "netto": -1.54,
+   "hoch": 0.228,
+   "tief": -1.175,
    "unvollstaendig": false
   }
  ]
