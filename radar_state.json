@@ -3,9 +3,10 @@
   "pushed": [
    "DRW3.DE",
    "FNTN.DE",
-   "HSY"
+   "HSY",
+   "GME"
   ],
-  "count": 3,
+  "count": 4,
   "exp_count": 1,
   "exp_pushed": [
    "SZG.DE"
@@ -13,31 +14,17 @@
  },
  "offen": [
   {
-   "typ": "EXPLOSION",
-   "ticker": "SZG.DE",
-   "kurs": 44.540000915527344,
-   "score": 79,
-   "relvol": 4.288255136461208,
-   "ziel": 45.058450383023704,
-   "stop": 44.28077618177917,
-   "ziel_pct": 1.1640086592715404,
-   "stop_pct": -0.5820043296357702,
-   "zeit_utc": "2026-11-20 15:21:47+00:00",
-   "zeit_de": "2026-11-20 16:21:47",
-   "ende_utc": "2026-11-20 15:36:47+00:00"
-  },
-  {
-   "ticker": "HSY",
-   "kurs": 177.97500610351562,
-   "score": 83,
-   "relvol": 1.590532293963777,
-   "ziel": 179.14225706690723,
-   "stop": 177.39138062181982,
-   "ziel_pct": 0.6558510596216576,
-   "stop_pct": -0.3279255298108288,
-   "zeit_utc": "2026-11-20 15:21:47+00:00",
-   "zeit_de": "2026-11-20 16:21:47",
-   "ende_utc": "2026-11-20 15:36:47+00:00"
+   "ticker": "GME",
+   "kurs": 27.07830047607422,
+   "score": 82,
+   "relvol": 2.0619172134897,
+   "ziel": 27.533288953127578,
+   "stop": 26.85080623754754,
+   "ziel_pct": 1.6802696958598786,
+   "stop_pct": -0.8401348479299393,
+   "zeit_utc": "2026-11-20 16:21:02+00:00",
+   "zeit_de": "2026-11-20 17:21:02",
+   "ende_utc": "2026-11-20 16:36:02+00:00"
   }
  ],
  "ergebnisse": [
@@ -159,6 +146,36 @@
    "netto": -0.619,
    "hoch": 0.243,
    "tief": -0.162,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-20 16:21:47",
+   "ticker": "SZG.DE",
+   "score": 79,
+   "typ": "EXPLOSION",
+   "relvol": 4.288255136461208,
+   "ziel_pct": 1.164,
+   "stop_pct": -0.582,
+   "ergebnis": "STOPP",
+   "pct": -0.582,
+   "netto": -1.282,
+   "hoch": -1.841,
+   "tief": -2.739,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-20 16:21:47",
+   "ticker": "HSY",
+   "score": 83,
+   "typ": "NORMAL",
+   "relvol": 1.590532293963777,
+   "ziel_pct": 0.656,
+   "stop_pct": -0.328,
+   "ergebnis": "NICHTS",
+   "pct": 0.435,
+   "netto": -0.265,
+   "hoch": 0.464,
+   "tief": 0.0,
    "unvollstaendig": false
   }
  ]
