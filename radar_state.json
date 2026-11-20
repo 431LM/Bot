@@ -13,22 +13,7 @@
    "ROST"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "ROST",
-   "kurs": 215.9600067138672,
-   "score": 70,
-   "relvol": 3.186053319604696,
-   "ziel": 217.83610265214048,
-   "stop": 215.02195874473054,
-   "ziel_pct": 0.8687237821579624,
-   "stop_pct": -0.4343618910789812,
-   "zeit_utc": "2026-11-20 17:21:59+00:00",
-   "zeit_de": "2026-11-20 18:21:59",
-   "ende_utc": "2026-11-20 17:36:59+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -193,6 +178,21 @@
    "netto": -1.54,
    "hoch": 0.228,
    "tief": -1.175,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-20 18:21:59",
+   "ticker": "ROST",
+   "score": 70,
+   "typ": "EXPLOSION",
+   "relvol": 3.186053319604696,
+   "ziel_pct": 0.869,
+   "stop_pct": -0.434,
+   "ergebnis": "NICHTS",
+   "pct": -0.176,
+   "netto": -0.876,
+   "hoch": 0.222,
+   "tief": -0.269,
    "unvollstaendig": false
   }
  ]
