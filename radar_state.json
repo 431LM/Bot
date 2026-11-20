@@ -14,22 +14,7 @@
    "TTWO"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "TTWO",
-   "kurs": 209.0050048828125,
-   "score": 95,
-   "relvol": 8.504178666672844,
-   "ziel": 212.74337325226386,
-   "stop": 207.1358206980868,
-   "ziel_pct": 1.7886501672758646,
-   "stop_pct": -0.8943250836379323,
-   "zeit_utc": "2026-11-20 19:29:13+00:00",
-   "zeit_de": "2026-11-20 20:29:13",
-   "ende_utc": "2026-11-20 19:44:13+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -209,6 +194,21 @@
    "netto": -0.876,
    "hoch": 0.222,
    "tief": -0.269,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-20 20:29:13",
+   "ticker": "TTWO",
+   "score": 95,
+   "typ": "EXPLOSION",
+   "relvol": 8.504178666672844,
+   "ziel_pct": 1.789,
+   "stop_pct": -0.894,
+   "ergebnis": "ZIEL",
+   "pct": 1.789,
+   "netto": 1.089,
+   "hoch": 2.739,
+   "tief": -0.4,
    "unvollstaendig": false
   }
  ]
