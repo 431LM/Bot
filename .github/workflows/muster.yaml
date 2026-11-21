@@ -1,0 +1,56 @@
+name: Muster
+
+on:
+  schedule:
+    # alle 15 Minuten, rund um die Uhr (Krypto laeuft immer, Aktien nur zu Handelszeiten)
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      modus:
+        description: "run, test oder backtest"
+        default: "run"
+      kosten:
+        description: "Kosten pro Trade in Prozent (z. B. 0.7)"
+        default: "0.7"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: muster
+  cancel-in-progress: false
+
+jobs:
+  muster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pakete installieren
+        run: pip install yfinance pandas numpy scipy matplotlib
+
+      - name: Muster laufen lassen
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          COST_PCT: ${{ github.event.inputs.kosten || '0.7' }}
+        run: python muster.py ${{ github.event.inputs.modus || 'run' }}
+
+      - name: Protokoll speichern
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add muster_state.json muster_stats.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Nichts zu speichern"
+          else
+            git commit -m "Muster-Protokoll"
+            for i in 1 2 3; do
+              git pull --rebase && git push && break
+              sleep 5
+            done
+          fi
