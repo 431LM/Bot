@@ -1,0 +1,37 @@
+name: Alles starten
+
+on:
+  workflow_dispatch:
+    inputs:
+      muster_modus:
+        description: "Muster-Modus: alles (Scan + Status), test (Demo mit Bild) oder backtest"
+        default: "alles"
+      kosten:
+        description: "Kosten pro Trade in Prozent (z. B. 0.7)"
+        default: "0.7"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  starten:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alle Workflows starten
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+        run: |
+          start() {
+            if gh workflow run "$1" --repo "$REPO" --ref "$REF" "${@:2}"; then
+              echo "GESTARTET: $1"
+            else
+              echo "NICHT gestartet: $1 (Datei fehlt oder hat keinen Run-Knopf)"
+            fi
+          }
+          start muster.yaml -f modus="${{ github.event.inputs.muster_modus || 'alles' }}" -f kosten="${{ github.event.inputs.kosten || '0.7' }}"
+          start radar.yaml
+          start watch.yaml
+          start daily.yaml

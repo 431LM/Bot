@@ -7,6 +7,8 @@ Backtest (muster_stats.json), nicht aus Lehrbuchwerten.
   python3 muster.py dry        Scan ansehen (keine Push)
   python3 muster.py test       Demo-Push mit Chartbild (prueft ntfy + Bild)
   python3 muster.py run        Scan + Push (macht GitHub Actions)
+  python3 muster.py status     Lebenszeichen-Push sofort senden
+  python3 muster.py alles      Scan + Status (fuer den Alles-Knopf)
   python3 muster.py backtest   Quote je Muster aus 60 Tagen -> muster_stats.json
 Kein Finanzrat.
 """
@@ -33,7 +35,8 @@ COST_PCT = float(os.environ.get("COST_PCT", "0.7").replace(",", "."))   # Gebueh
 ZIEL_X, STOP_X = 2.0, 1.0        # Ziel/Stopp in typischen 15-Min-Spannen
 NUR_POSITIV, MIN_N = True, 30    # Muster mit Backtest-Minus (ab 30 Faellen) nicht melden
 KRYPTO = "BTC-USD ETH-USD SOL-USD XRP-USD LTC-USD DOGE-USD ADA-USD LINK-USD AVAX-USD"
-STATE, STATS, UNIVERSE_FILE = "muster_state.json", "muster_stats.json", "universe.txt"
+STATE, STATS, LIVE, UNIVERSE_FILE = "muster_state.json", "muster_stats.json", "muster_live.json", "universe.txt"
+STATUS_AB = 20        # ab dieser Uhrzeit (DE) kommt taeglich das Lebenszeichen
 SPIEGEL = {"Double top": "Double bottom", "Triple top": "Triple bottom",
            "Head and Shoulders": "Inverse Head and Shoulders", "Descending triangle": "Ascending triangle",
            "Rising wedge": "Falling wedge", "Bear flag": "Bull flag", "Bear pennant": "Bull pennant",
@@ -356,21 +359,88 @@ def lade_json(pfad):
         return {}
 
 
-def speichere_state(st):
-    with open(STATE, "w", encoding="utf-8") as f:
-        json.dump(st, f, ensure_ascii=False, indent=1)
+def schreibe_json(pfad, obj):
+    with open(pfad, "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=1)
+
+
+def bewerte_live(live, daten, jetzt):
+    """Wertet frueher gemeldete Muster mit der naechsten kompletten 15-Min-Kerze aus (Forward-Test)."""
+    rest = []
+    for a in live.get("offen", []):
+        ende = pd.Timestamp(a["bar_ende"])
+        df = daten.get(a["ticker"])
+        if df is not None:
+            nx = vollstaendig(df, jetzt)
+            nx = nx[nx.index >= ende]
+            if len(nx):
+                r = nx.iloc[0]
+                e, net = bewerte_kerze(a["d"], a["k"], a["plan"], float(r["High"]), float(r["Low"]), float(r["Close"]))
+                live["ergebnisse"].append({"zeit": a["bar_ende"], "ticker": a["ticker"], "name": a["name"],
+                                           "erg": e, "net": round(float(net), 3)})
+                continue
+        if (jetzt - ende.to_pydatetime()).total_seconds() / 60 < 120:
+            rest.append(a)
+    live["offen"] = rest
+    live["ergebnisse"] = live["ergebnisse"][-5000:]
+
+
+def baue_status(tag, live, stats, jetzt):
+    lok = jetzt.astimezone(TZ_DE)
+    n_l = max(tag.get("laeufe", 0), 1)
+    z = [f"MUSTER-BOT LEBT ({lok.strftime('%d.%m.%Y %H:%M')} Uhr DE)",
+         f"Laeufe heute: {tag.get('laeufe', 0)}, geprueft im Schnitt {tag.get('geprueft', 0) / n_l:.0f} Werte pro Lauf.",
+         f"Muster-Ausbrueche gefunden: {tag.get('treffer', 0)} | gemeldet: {tag.get('count', 0)} | "
+         f"wegen Backtest-Minus unterdrueckt: {sum(tag.get('unterdrueckt', {}).values())}."]
+    erg = live.get("ergebnisse", [])
+    if erg:
+        s = kenn(pd.DataFrame(erg))
+        z.append(f"Live-Auswertung aller Meldungen (n={s['n']}): Ziel {s['ziel_pct']:.0f} %, im Plus nach Kosten "
+                 f"{s['plus_pct']:.0f} %, Schnitt {s['netto']:+.2f} % pro Meldung.")
+        if s["n"] < 30:
+            z.append("Unter 30 Faellen ist das Zufall, noch keine Aussage moeglich.")
+    else:
+        z.append("Live-Auswertung: noch keine ausgewerteten Meldungen.")
+    a = stats.get("ALLE")
+    z.append(f"Backtest: n={a['n']}, Schnitt {a['netto']:+.2f} % pro Trade nach Kosten." if a
+             else "Backtest: fehlt noch (Workflow Muster, Modus backtest).")
+    if lok.weekday() >= 5:
+        z.append("Wochenende: Aktien geschlossen, es wird nur Krypto geprueft.")
+    z.append(f"Kostenannahme {COST_PCT} % pro Trade. Kein Finanzrat.")
+    return "\n".join(z)
+
+
+def cmd_status():
+    jetzt = dt.datetime.now(dt.timezone.utc)
+    heute = jetzt.astimezone(TZ_DE).strftime("%Y-%m-%d")
+    live = lade_json(LIVE)
+    live.setdefault("ergebnisse", [])
+    ok = sende_push("Muster-Bot Status", baue_status(lade_json(STATE).get(heute, {}), live, lade_json(STATS), jetzt),
+                    None, "low")
+    print("Status gesendet." if ok else "Status NICHT gesendet.")
 
 
 def cmd_run(jetzt=None, daten_fn=None, push_fn=None, trocken=False):
     jetzt = jetzt or dt.datetime.now(dt.timezone.utc)
     push_fn = push_fn or sende_push
     heute = jetzt.astimezone(TZ_DE).strftime("%Y-%m-%d")
-    tag = lade_json(STATE).get(heute, {"count": 0, "gesehen": []})
+    tag = lade_json(STATE).get(heute, {})
+    for key, val in (("count", 0), ("gesehen", []), ("laeufe", 0), ("geprueft", 0), ("treffer", 0), ("unterdrueckt", {})):
+        tag.setdefault(key, val)
+    live = lade_json(LIVE)
+    live.setdefault("offen", [])
+    live.setdefault("ergebnisse", [])
+    tag["laeufe"] += 1
     tickers = [t for t in universum() if offen(t, jetzt)]
+    extra = [a["ticker"] for a in live["offen"] if a["ticker"] not in tickers]
     print(f"Pruefe {len(tickers)} Werte auf Muster ...")
-    daten = (daten_fn or lade)(tickers) if tickers else {}
+    daten = (daten_fn or lade)(tickers + extra) if (tickers or extra) else {}
+    tag["geprueft"] += len(tickers)
+    bewerte_live(live, daten, jetzt)
     stats, kand = lade_json(STATS), []
     for t, df in daten.items():
+        if t not in tickers:
+            continue
         df = vollstaendig(df, jetzt)
         if len(df) < 70:
             continue
@@ -381,13 +451,15 @@ def cmd_run(jetzt=None, daten_fn=None, push_fn=None, trocken=False):
         m = beste(w)
         if not m or f"{t}|{m['name']}" in tag["gesehen"]:
             continue
+        tag["treffer"] += 1
         s = stats.get(m["name"])
         if NUR_POSITIV and s and s["n"] >= MIN_N and s["netto"] < 0:
             print(f"{t}: {m['name']} uebersprungen (Backtest nach Kosten negativ).")
+            tag["unterdrueckt"][m["name"]] = tag["unterdrueckt"].get(m["name"], 0) + 1
             continue
         kand.append((m["q"], t, w, m, alter, s))
     kand.sort(key=lambda x: x[0], reverse=True)
-    print(f"{len(kand)} Muster-Ausbrueche gefunden.")
+    print(f"{len(kand)} Muster-Ausbrueche zur Meldung.")
     for q, t, w, m, alter, s in kand:
         if tag["count"] >= MAX_PER_DAY:
             print("Tageslimit erreicht.")
@@ -395,7 +467,8 @@ def cmd_run(jetzt=None, daten_fn=None, push_fn=None, trocken=False):
         k = float(w["Close"].iloc[-1])
         pl = plan(k, spanne(w), m["d"])
         text = baue_text(t, m, pl, k, alter, s, jetzt)
-        titel = f"{t}: {m['name']} ({'Long' if m['d'] > 0 else 'Short'}) {m['q']:.0f} %"
+        label = "BACKTEST PLUS" if (s and s["n"] >= MIN_N and s["netto"] > 0) else "UNGEPRUEFT"
+        titel = f"{t}: {m['name']} ({'Long' if m['d'] > 0 else 'Short'}) {m['q']:.0f} % [{label}]"
         print("\n" + titel + "\n" + text + "\n")
         if trocken:
             continue
@@ -407,8 +480,16 @@ def cmd_run(jetzt=None, daten_fn=None, push_fn=None, trocken=False):
         if push_fn(titel, text, bild, "high" if m["q"] >= 80 else "default"):
             tag["count"] += 1
             tag["gesehen"].append(f"{t}|{m['name']}")
-    if not trocken:
-        speichere_state({heute: tag})
+            live["offen"].append({"ticker": t, "name": m["name"], "d": m["d"], "k": k,
+                                  "plan": {x: float(pl[x]) for x in ("ziel", "stop", "ziel_pct", "stop_pct")},
+                                  "bar_ende": (w.index[-1] + pd.Timedelta(minutes=15)).tz_convert("UTC").isoformat()})
+    if trocken:
+        return
+    if jetzt.astimezone(TZ_DE).hour >= STATUS_AB and not tag.get("status"):
+        if push_fn("Muster-Bot Status", baue_status(tag, live, stats, jetzt), None, "low"):
+            tag["status"] = True
+    schreibe_json(STATE, {heute: tag})
+    schreibe_json(LIVE, live)
 
 
 def kenn(g):
@@ -488,6 +569,11 @@ if __name__ == "__main__":
         cmd_test()
     elif modus == "backtest":
         cmd_backtest()
+    elif modus == "status":
+        cmd_status()
+    elif modus == "alles":
+        cmd_run()
+        cmd_status()
     elif modus in ("run", "dry"):
         cmd_run(trocken=(modus == "dry"))
     else:

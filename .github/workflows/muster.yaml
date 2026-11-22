@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       modus:
-        description: "run, test oder backtest"
+        description: "run, alles, status, test oder backtest"
         default: "run"
       kosten:
         description: "Kosten pro Trade in Prozent (z. B. 0.7)"
@@ -44,7 +44,7 @@ jobs:
         run: |
           git config user.name "radar-bot"
           git config user.email "radar-bot@users.noreply.github.com"
-          git add muster_state.json muster_stats.json 2>/dev/null || true
+          git add muster_state.json muster_stats.json muster_live.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Nichts zu speichern"
           else
