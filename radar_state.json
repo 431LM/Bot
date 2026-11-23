@@ -5,21 +5,7 @@
   ],
   "count": 1
  },
- "offen": [
-  {
-   "ticker": "FNTN.DE",
-   "kurs": 24.700000762939453,
-   "score": 65,
-   "relvol": 0.6475317415688046,
-   "ziel": 24.78230170471553,
-   "stop": 24.658850292051415,
-   "ziel_pct": 0.33320218313338323,
-   "stop_pct": -0.16660109156669162,
-   "zeit_utc": "2026-11-23 09:47:11+00:00",
-   "zeit_de": "2026-11-23 10:47:11",
-   "ende_utc": "2026-11-23 10:02:11+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -214,6 +200,21 @@
    "netto": 1.089,
    "hoch": 2.739,
    "tief": -0.4,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-23 10:47:11",
+   "ticker": "FNTN.DE",
+   "score": 65,
+   "typ": "NORMAL",
+   "relvol": 0.6475317415688046,
+   "ziel_pct": 0.333,
+   "stop_pct": -0.167,
+   "ergebnis": "NICHTS",
+   "pct": 0.0,
+   "netto": -0.7,
+   "hoch": 0.0,
+   "tief": -0.081,
    "unvollstaendig": false
   }
  ]
