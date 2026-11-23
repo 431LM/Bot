@@ -14,22 +14,7 @@
    "BOX"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "BOX",
-   "kurs": 45.33000183105469,
-   "score": 76,
-   "relvol": 3.0429916128642973,
-   "ziel": 45.74169689748371,
-   "stop": 45.12415429784017,
-   "ziel_pct": 0.9082176258527714,
-   "stop_pct": -0.4541088129263857,
-   "zeit_utc": "2026-11-23 16:51:40+00:00",
-   "zeit_de": "2026-11-23 17:51:40",
-   "ende_utc": "2026-11-23 17:06:40+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -314,6 +299,21 @@
    "netto": 0.263,
    "hoch": 1.151,
    "tief": -0.223,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-23 17:51:40",
+   "ticker": "BOX",
+   "score": 76,
+   "typ": "EXPLOSION",
+   "relvol": 3.0429916128642973,
+   "ziel_pct": 0.908,
+   "stop_pct": -0.454,
+   "ergebnis": "NICHTS",
+   "pct": 0.088,
+   "netto": -0.612,
+   "hoch": 0.132,
+   "tief": -0.243,
    "unvollstaendig": false
   }
  ]
