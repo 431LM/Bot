@@ -13,35 +13,7 @@
    "VKTX"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "VKTX",
-   "kurs": 27.2450008392334,
-   "score": 76,
-   "relvol": 3.2960095177696167,
-   "ziel": 27.770677488318682,
-   "stop": 26.982162514690756,
-   "ziel_pct": 1.9294425872371335,
-   "stop_pct": -0.9647212936185667,
-   "zeit_utc": "2026-11-23 15:10:58+00:00",
-   "zeit_de": "2026-11-23 16:10:58",
-   "ende_utc": "2026-11-23 15:25:58+00:00"
-  },
-  {
-   "ticker": "TSLA",
-   "kurs": 388.7250061035156,
-   "score": 75,
-   "relvol": 2.5043956613091884,
-   "ziel": 394.75182349554,
-   "stop": 385.71159740750346,
-   "ziel_pct": 1.5504064048865145,
-   "stop_pct": -0.7752032024432572,
-   "zeit_utc": "2026-11-23 15:10:58+00:00",
-   "zeit_de": "2026-11-23 16:10:58",
-   "ende_utc": "2026-11-23 15:25:58+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -296,6 +268,36 @@
    "netto": -1.688,
    "hoch": 1.135,
    "tief": -4.734,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-23 16:10:58",
+   "ticker": "VKTX",
+   "score": 76,
+   "typ": "EXPLOSION",
+   "relvol": 3.2960095177696167,
+   "ziel_pct": 1.929,
+   "stop_pct": -0.965,
+   "ergebnis": "NICHTS",
+   "pct": 1.266,
+   "netto": 0.566,
+   "hoch": 1.45,
+   "tief": -0.239,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-23 16:10:58",
+   "ticker": "TSLA",
+   "score": 75,
+   "typ": "NORMAL",
+   "relvol": 2.5043956613091884,
+   "ziel_pct": 1.55,
+   "stop_pct": -0.775,
+   "ergebnis": "NICHTS",
+   "pct": 0.963,
+   "netto": 0.263,
+   "hoch": 1.151,
+   "tief": -0.223,
    "unvollstaendig": false
   }
  ]
