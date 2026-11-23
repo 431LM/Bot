@@ -1,22 +1,9 @@
-# Paper-trading baseline (initial implementation)
+# Validation and data policy (increment 2)
 
-This package is an isolated, deterministic simulator. It does not contain broker integrations or submit orders. It does not change the existing radar, pattern, scanner, or watcher systems.
+`papertrade.data.validate_bars` rejects invalid OHLCV rows, naive timestamps, duplicates, out-of-order bars, large close-to-close jumps, insufficient liquidity, and stale/future data when a `now` timestamp is supplied. Incomplete bars are omitted. It never fills or fabricates market values. A caller must treat any issue as degraded and refrain from new entries; the present backtest returns ERROR if validated series are empty or data issues are found in reporting.
 
-## First implementation slice
+`papertrade.backtest` adds a chronological baseline simulator scaffold. Signals are calculated from prior complete bars and scheduled at the following bar open. Output is always `NOT VALIDATED`; the current metrics are explicitly limited and must not be used as evidence of edge. The multi-asset loop uses ordinal bar alignment, not exchange-calendar synchronization, and realized-only drawdown is not the true intratrade portfolio drawdown. It is an intermediate harness, not a completed research-grade backtester.
 
-- `papertrade/strategy.py`: EMA20/EMA50, RSI14, ATR14 baseline; incomplete final bars and insufficient history produce no signal.
-- `papertrade/risk.py`: risk-based sizing, a 1% risk-per-entry ceiling, 5x notional ceiling, portfolio risk limit, position/group caps, daily 5% halt and drawdown halt.
-- `papertrade/execution.py`: paper fills, adverse spread/slippage and fees, stop-first ambiguous OHLC execution, gap-aware stops, three 25%-of-original target exits and trailing stop on the final quarter.
-- `papertrade/engine.py`: paper-only coordination and deterministic state transitions.
-- `papertrade/store.py`: versioned atomic JSON persistence; malformed or unknown state fails closed rather than silently resetting.
-- `tests/test_papertrade_core.py`: standard-library regression tests.
+Time splitting and expanding-window split helpers are included. No market history was downloaded and no backtest performance or strategy-validation result was generated in this change.
 
-## Important limitations (not validated)
-
-This is a core implementation slice, not a production-ready or strategy-validated system. No historical performance claim is made. The trailing distance currently derives from the initial per-unit risk amount as an ATR proxy; the engine/data adapter still needs to persist actual ATR for correct trailing semantics. Correlation is handled only through configured asset groups, not estimated from returns. Daily boundaries currently use the date prefix of the supplied timestamp; the live runner must normalize this to a configured exchange timezone. Marks and stale-data validation are not yet integrated. Backtesting, walk-forward/OOS validation, monitoring, Actions scheduling, and broad test coverage remain follow-up work.
-
-Free market data may be delayed, incomplete, adjusted, or subject to rate limits. Paper results do not imply real-world execution or profitability. All prices and performance are simulations only.
-
-## Run core tests
-
-`python -m unittest discover -s tests -v`
+Run checks locally with `python -m unittest discover -s tests -v`. This environment provides repository file tools only, so execution is not claimed.

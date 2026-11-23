@@ -18,16 +18,16 @@ class PaperEngine:
         key = f"{signal.ticker}|{signal.timestamp}|{signal.side.value}|{signal.strategy_version}"
         if key in self.seen:
             return "DUPLICATE"
-        self.seen.add(key)
         qty, reason = size_position(self.account, signal, self.config, marks, sector)
         if reason:
             return "REJECTED: " + reason
+        self.seen.add(key)
         stop = signal.close - self.config.stop_atr_multiple * signal.atr if signal.side.value == "LONG" else signal.close + self.config.stop_atr_multiple * signal.atr
         p, fee = open_position(signal.ticker, signal.side, signal.timestamp, signal.close, qty, stop, qty * self.config.stop_atr_multiple * signal.atr, sector, self.config)
         self.account.cash -= fee
         self.account.positions[signal.ticker] = p
         self.account.fills.append({"ticker": signal.ticker, "time": signal.timestamp, "side": signal.side.value,
-                                   "qty": qty, "price": p.entry_price, "fee": fee, "reason": "ENTRY"})
+                                   "qty": qty, "price": p.entry_price, "fee": fee, "reason": "ENTRY", "signal_id": key})
         save_account(self.state_path, self.account)
         return "ACCEPTED"
 

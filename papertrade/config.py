@@ -23,10 +23,9 @@ class Config:
     max_bar_age_seconds: int = 86400
     max_price_jump: float = 0.50
     min_volume: float = 0.0
-    # Optional conservative grouping; assets in one group share a position cap.
     asset_groups: dict[str, str] = field(default_factory=dict)
     max_correlated_positions: int = 2
-
+    
     def __post_init__(self):
         if self.starting_cash <= 0 or not 0 < self.risk_per_trade <= 0.01:
             raise ValueError("starting_cash must be positive and risk_per_trade in (0, 1%]")
@@ -40,3 +39,7 @@ class Config:
             raise ValueError("three partial exits must each close 25% of original size")
         if min(self.fee_rate, self.slippage_bps, self.spread_bps) < 0:
             raise ValueError("execution costs cannot be negative")
+        if self.stop_atr_multiple <= 0 or self.trailing_atr_multiple <= 0 or self.max_bar_age_seconds <= 0:
+            raise ValueError("ATR multiples and max bar age must be positive")
+        if not 0 < self.max_price_jump <= 5 or self.max_correlated_positions < 1:
+            raise ValueError("invalid jump or correlation cap")
