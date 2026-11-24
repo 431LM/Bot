@@ -13,22 +13,7 @@
    "GPN"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "GPN",
-   "kurs": 95.5999984741211,
-   "score": 99,
-   "relvol": 35.535878576172784,
-   "ziel": 96.69600965047722,
-   "stop": 95.05199288594302,
-   "ziel_pct": 1.1464552236920929,
-   "stop_pct": -0.5732276118460464,
-   "zeit_utc": "2026-11-24 17:42:53+00:00",
-   "zeit_de": "2026-11-24 18:42:53",
-   "ende_utc": "2026-11-24 17:57:53+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -403,6 +388,21 @@
    "netto": -0.722,
    "hoch": 0.39,
    "tief": -0.353,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-24 18:42:53",
+   "ticker": "GPN",
+   "score": 99,
+   "typ": "EXPLOSION",
+   "relvol": 35.535878576172784,
+   "ziel_pct": 1.146,
+   "stop_pct": -0.573,
+   "ergebnis": "STOPP",
+   "pct": -0.573,
+   "netto": -1.273,
+   "hoch": 0.397,
+   "tief": -0.586,
    "unvollstaendig": false
   }
  ]
