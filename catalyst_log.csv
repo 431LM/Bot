@@ -92,3 +92,10 @@ date,ticker,score,max,price,reasons
 2026-11-23,SMCI,1,8,25.94,"Short-Anteil 12.7 % vom Float; Days to Cover 2.1; Float 560 Mio. Aktien; Volumen 0.2x; kein Ausbruch; Quartalszahlen in 71 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
 2026-11-23,ARM,1,8,181.73,"Short-Anteil 10.7 % vom Float; Days to Cover 3.3; Float 144 Mio. Aktien; Volumen 0.1x; kein Ausbruch; Quartalszahlen in 72 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
 2026-11-23,UBER,0,8,64.5,"Short-Anteil 2.3 % vom Float; Days to Cover 2.8; Float 2036 Mio. Aktien; Volumen 0.0x; kein Ausbruch; Quartalszahlen in 72 Tagen; Analysten 30 Tage: 0 hoch, 0 runter"
+2026-11-24,SNG.DE,1,3,17.9,Float 8 Mio. Aktien; Volumen 0.2x; kein Ausbruch
+2026-11-24,SAP.DE,0,3,184.68,Float 1088 Mio. Aktien; Volumen 0.1x; kein Ausbruch
+2026-11-24,SIE.DE,0,4,262.4,Float 771 Mio. Aktien; Volumen 0.1x; kein Ausbruch; Quartalszahlen in 79 Tagen
+2026-11-24,RHM.DE,1,3,738.8,Float 47 Mio. Aktien; Volumen 0.2x; kein Ausbruch
+2026-11-24,ALV.DE,0,3,457.9,Float 374 Mio. Aktien; Volumen 0.1x; kein Ausbruch
+2026-11-24,AIR.DE,0,3,195.24,Float 704 Mio. Aktien; Volumen 0.1x; kein Ausbruch
+2026-11-24,IFX.DE,0,4,47.175,Float 1301 Mio. Aktien; Volumen 0.1x; kein Ausbruch; Quartalszahlen in 71 Tagen
