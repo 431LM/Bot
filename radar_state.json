@@ -3,9 +3,10 @@
   "pushed": [
    "DRW3.DE",
    "ZAL.DE",
-   "DLTR"
+   "DLTR",
+   "BMRN"
   ],
-  "count": 3,
+  "count": 4,
   "exp_count": 1,
   "exp_pushed": [
    "PINS"
@@ -13,31 +14,17 @@
  },
  "offen": [
   {
-   "typ": "EXPLOSION",
-   "ticker": "PINS",
-   "kurs": 19.25,
-   "score": 99,
-   "relvol": 11.547560545626832,
-   "ziel": 19.503327824184897,
-   "stop": 19.123336087907553,
-   "ziel_pct": 1.315988697064396,
-   "stop_pct": -0.657994348532198,
-   "zeit_utc": "2026-11-24 14:52:04+00:00",
-   "zeit_de": "2026-11-24 15:52:04",
-   "ende_utc": "2026-11-24 15:07:04+00:00"
-  },
-  {
-   "ticker": "DLTR",
-   "kurs": 153.69000244140625,
-   "score": 100,
-   "relvol": 3.3585654537579916,
-   "ziel": 155.56183602507568,
-   "stop": 152.75408564957152,
-   "ziel_pct": 1.2179280069847376,
-   "stop_pct": -0.6089640034923688,
-   "zeit_utc": "2026-11-24 14:52:04+00:00",
-   "zeit_de": "2026-11-24 15:52:04",
-   "ende_utc": "2026-11-24 15:07:04+00:00"
+   "ticker": "BMRN",
+   "kurs": 67.9749984741211,
+   "score": 87,
+   "relvol": 3.112191927779606,
+   "ziel": 68.68825062029363,
+   "stop": 67.61837240103482,
+   "ziel_pct": 1.049286005418718,
+   "stop_pct": -0.524643002709359,
+   "zeit_utc": "2026-11-24 15:54:12+00:00",
+   "zeit_de": "2026-11-24 16:54:12",
+   "ende_utc": "2026-11-24 16:09:12+00:00"
   }
  ],
  "ergebnisse": [
@@ -369,6 +356,36 @@
    "netto": 0.101,
    "hoch": 1.1,
    "tief": 0.069,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-24 15:52:04",
+   "ticker": "PINS",
+   "score": 99,
+   "typ": "EXPLOSION",
+   "relvol": 11.547560545626832,
+   "ziel_pct": 1.316,
+   "stop_pct": -0.658,
+   "ergebnis": "STOPP",
+   "pct": -0.658,
+   "netto": -1.358,
+   "hoch": 1.247,
+   "tief": -1.455,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-24 15:52:04",
+   "ticker": "DLTR",
+   "score": 100,
+   "typ": "NORMAL",
+   "relvol": 3.3585654537579916,
+   "ziel_pct": 1.218,
+   "stop_pct": -0.609,
+   "ergebnis": "STOPP",
+   "pct": -0.609,
+   "netto": -1.309,
+   "hoch": 0.985,
+   "tief": -1.217,
    "unvollstaendig": false
   }
  ]
