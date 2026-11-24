@@ -12,21 +12,7 @@
    "PINS"
   ]
  },
- "offen": [
-  {
-   "ticker": "BMRN",
-   "kurs": 67.9749984741211,
-   "score": 87,
-   "relvol": 3.112191927779606,
-   "ziel": 68.68825062029363,
-   "stop": 67.61837240103482,
-   "ziel_pct": 1.049286005418718,
-   "stop_pct": -0.524643002709359,
-   "zeit_utc": "2026-11-24 15:54:12+00:00",
-   "zeit_de": "2026-11-24 16:54:12",
-   "ende_utc": "2026-11-24 16:09:12+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -386,6 +372,21 @@
    "netto": -1.309,
    "hoch": 0.985,
    "tief": -1.217,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-24 16:54:12",
+   "ticker": "BMRN",
+   "score": 87,
+   "typ": "NORMAL",
+   "relvol": 3.112191927779606,
+   "ziel_pct": 1.049,
+   "stop_pct": -0.525,
+   "ergebnis": "NICHTS",
+   "pct": -0.022,
+   "netto": -0.722,
+   "hoch": 0.39,
+   "tief": -0.353,
    "unvollstaendig": false
   }
  ]
