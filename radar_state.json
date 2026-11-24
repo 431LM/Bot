@@ -5,21 +5,7 @@
   ],
   "count": 1
  },
- "offen": [
-  {
-   "ticker": "DRW3.DE",
-   "kurs": 122.4000015258789,
-   "score": 70,
-   "relvol": 0.21612920474020875,
-   "ziel": 123.23477997368867,
-   "stop": 121.98261230197403,
-   "ziel_pct": 0.6820085272901413,
-   "stop_pct": -0.34100426364507064,
-   "zeit_utc": "2026-11-24 08:18:43+00:00",
-   "zeit_de": "2026-11-24 09:18:43",
-   "ende_utc": "2026-11-24 08:33:43+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -319,6 +305,21 @@
    "netto": -0.612,
    "hoch": 0.132,
    "tief": -0.243,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-24 09:18:43",
+   "ticker": "DRW3.DE",
+   "score": 70,
+   "typ": "NORMAL",
+   "relvol": 0.21612920474020875,
+   "ziel_pct": 0.682,
+   "stop_pct": -0.341,
+   "ergebnis": "NICHTS",
+   "pct": 0.327,
+   "netto": -0.373,
+   "hoch": 0.327,
+   "tief": 0.0,
    "unvollstaendig": false
   }
  ]
