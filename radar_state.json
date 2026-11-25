@@ -12,22 +12,7 @@
    "WPM"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "WPM",
-   "kurs": 114.9749984741211,
-   "score": 83,
-   "relvol": 4.043190117668274,
-   "ziel": 116.50721444303748,
-   "stop": 114.20889048966289,
-   "ziel_pct": 1.3326514366175535,
-   "stop_pct": -0.6663257183087767,
-   "zeit_utc": "2026-11-25 16:54:32+00:00",
-   "zeit_de": "2026-11-25 17:54:32",
-   "ende_utc": "2026-11-25 17:09:32+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -477,6 +462,21 @@
    "netto": -0.173,
    "hoch": 0.885,
    "tief": 0.514,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-25 17:54:32",
+   "ticker": "WPM",
+   "score": 83,
+   "typ": "EXPLOSION",
+   "relvol": 4.043190117668274,
+   "ziel_pct": 1.333,
+   "stop_pct": -0.666,
+   "ergebnis": "ZIEL",
+   "pct": 1.333,
+   "netto": 0.633,
+   "hoch": 1.422,
+   "tief": -0.561,
    "unvollstaendig": false
   }
  ]
