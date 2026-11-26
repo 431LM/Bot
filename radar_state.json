@@ -12,21 +12,7 @@
    "JUN3.DE"
   ]
  },
- "offen": [
-  {
-   "ticker": "SY1.DE",
-   "kurs": 98.36000061035156,
-   "score": 65,
-   "relvol": 0.35625367633234073,
-   "ziel": 98.85261419992767,
-   "stop": 98.11369381556351,
-   "ziel_pct": 0.5008271518089689,
-   "stop_pct": -0.25041357590448443,
-   "zeit_utc": "2026-11-26 11:33:12+00:00",
-   "zeit_de": "2026-11-26 12:33:12",
-   "ende_utc": "2026-11-26 11:48:12+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -551,6 +537,21 @@
    "netto": -0.737,
    "hoch": 0.074,
    "tief": -0.037,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-26 12:33:12",
+   "ticker": "SY1.DE",
+   "score": 65,
+   "typ": "NORMAL",
+   "relvol": 0.35625367633234073,
+   "ziel_pct": 0.501,
+   "stop_pct": -0.25,
+   "ergebnis": "NICHTS",
+   "pct": 0.061,
+   "netto": -0.639,
+   "hoch": 0.163,
+   "tief": 0.041,
    "unvollstaendig": false
   }
  ]
