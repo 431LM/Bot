@@ -2,9 +2,10 @@
  "2026-11-26": {
   "pushed": [
    "VNA.DE",
-   "FNTN.DE"
+   "FNTN.DE",
+   "DTE.DE"
   ],
-  "count": 2,
+  "count": 3,
   "exp_count": 1,
   "exp_pushed": [
    "JUN3.DE"
@@ -12,17 +13,17 @@
  },
  "offen": [
   {
-   "ticker": "FNTN.DE",
-   "kurs": 24.899999618530273,
-   "score": 75,
-   "relvol": 0.3610301903406796,
-   "ziel": 24.981372142953784,
-   "stop": 24.859313356318516,
-   "ziel_pct": 0.3267972918479682,
-   "stop_pct": -0.1633986459239841,
-   "zeit_utc": "2026-11-26 09:39:00+00:00",
-   "zeit_de": "2026-11-26 10:39:00",
-   "ende_utc": "2026-11-26 09:54:00+00:00"
+   "ticker": "DTE.DE",
+   "kurs": 27.15999984741211,
+   "score": 65,
+   "relvol": 0.373499173752193,
+   "ziel": 27.283315123145577,
+   "stop": 27.098342209545375,
+   "ziel_pct": 0.4540326819818413,
+   "stop_pct": -0.22701634099092066,
+   "zeit_utc": "2026-11-26 10:38:58+00:00",
+   "zeit_de": "2026-11-26 11:38:58",
+   "ende_utc": "2026-11-26 10:53:58+00:00"
   }
  ],
  "ergebnisse": [
@@ -519,6 +520,21 @@
    "netto": -0.973,
    "hoch": -0.17,
    "tief": -0.739,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-26 10:39:00",
+   "ticker": "FNTN.DE",
+   "score": 75,
+   "typ": "NORMAL",
+   "relvol": 0.3610301903406796,
+   "ziel_pct": 0.327,
+   "stop_pct": -0.163,
+   "ergebnis": "NICHTS",
+   "pct": 0.321,
+   "netto": -0.379,
+   "hoch": 0.321,
+   "tief": 0.161,
    "unvollstaendig": false
   }
  ]
