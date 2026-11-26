@@ -1,9 +1,10 @@
 {
  "2026-11-26": {
   "pushed": [
-   "VNA.DE"
+   "VNA.DE",
+   "FNTN.DE"
   ],
-  "count": 1,
+  "count": 2,
   "exp_count": 1,
   "exp_pushed": [
    "JUN3.DE"
@@ -11,31 +12,17 @@
  },
  "offen": [
   {
-   "typ": "EXPLOSION",
-   "ticker": "JUN3.DE",
-   "kurs": 20.040000915527344,
-   "score": 91,
-   "relvol": 14.365145228215768,
-   "ziel": 20.1973314955401,
-   "stop": 19.961335625520963,
-   "ziel_pct": 0.7850826987280941,
-   "stop_pct": -0.39254134936404705,
-   "zeit_utc": "2026-11-26 08:21:53+00:00",
-   "zeit_de": "2026-11-26 09:21:53",
-   "ende_utc": "2026-11-26 08:36:53+00:00"
-  },
-  {
-   "ticker": "VNA.DE",
-   "kurs": 17.594999313354492,
-   "score": 70,
-   "relvol": 0.14009575484061595,
-   "ziel": 17.691012506577362,
-   "stop": 17.546992716743055,
-   "ziel_pct": 0.5456845522579612,
-   "stop_pct": -0.2728422761289806,
-   "zeit_utc": "2026-11-26 08:21:53+00:00",
-   "zeit_de": "2026-11-26 09:21:53",
-   "ende_utc": "2026-11-26 08:36:53+00:00"
+   "ticker": "FNTN.DE",
+   "kurs": 24.899999618530273,
+   "score": 75,
+   "relvol": 0.3610301903406796,
+   "ziel": 24.981372142953784,
+   "stop": 24.859313356318516,
+   "ziel_pct": 0.3267972918479682,
+   "stop_pct": -0.1633986459239841,
+   "zeit_utc": "2026-11-26 09:39:00+00:00",
+   "zeit_de": "2026-11-26 10:39:00",
+   "ende_utc": "2026-11-26 09:54:00+00:00"
   }
  ],
  "ergebnisse": [
@@ -502,6 +489,36 @@
    "netto": 0.633,
    "hoch": 1.422,
    "tief": -0.561,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-26 09:21:53",
+   "ticker": "JUN3.DE",
+   "score": 91,
+   "typ": "EXPLOSION",
+   "relvol": 14.365145228215768,
+   "ziel_pct": 0.785,
+   "stop_pct": -0.393,
+   "ergebnis": "NICHTS",
+   "pct": 0.299,
+   "netto": -0.401,
+   "hoch": 0.599,
+   "tief": 0.2,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-26 09:21:53",
+   "ticker": "VNA.DE",
+   "score": 70,
+   "typ": "NORMAL",
+   "relvol": 0.14009575484061595,
+   "ziel_pct": 0.546,
+   "stop_pct": -0.273,
+   "ergebnis": "STOPP",
+   "pct": -0.273,
+   "netto": -0.973,
+   "hoch": -0.17,
+   "tief": -0.739,
    "unvollstaendig": false
   }
  ]
