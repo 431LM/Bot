@@ -8,21 +8,7 @@
   ],
   "count": 4
  },
- "offen": [
-  {
-   "ticker": "VNA.DE",
-   "kurs": 17.625,
-   "score": 65,
-   "relvol": 0.4082078484405664,
-   "ziel": 17.7152822431097,
-   "stop": 17.57985887844515,
-   "ziel_pct": 0.5122396772181641,
-   "stop_pct": -0.25611983860908205,
-   "zeit_utc": "2026-11-27 11:32:19+00:00",
-   "zeit_de": "2026-11-27 12:32:19",
-   "ende_utc": "2026-11-27 11:47:19+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -607,6 +593,21 @@
    "netto": -0.626,
    "hoch": 0.148,
    "tief": -0.148,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-27 12:32:19",
+   "ticker": "VNA.DE",
+   "score": 65,
+   "typ": "NORMAL",
+   "relvol": 0.4082078484405664,
+   "ziel_pct": 0.512,
+   "stop_pct": -0.256,
+   "ergebnis": "NICHTS",
+   "pct": 0.085,
+   "netto": -0.615,
+   "hoch": 0.17,
+   "tief": 0.028,
    "unvollstaendig": false
   }
  ]
