@@ -3,23 +3,24 @@
   "pushed": [
    "FNTN.DE",
    "ZAL.DE",
-   "DTE.DE"
+   "DTE.DE",
+   "VNA.DE"
   ],
-  "count": 3
+  "count": 4
  },
  "offen": [
   {
-   "ticker": "DTE.DE",
-   "kurs": 27.100000381469727,
+   "ticker": "VNA.DE",
+   "kurs": 17.625,
    "score": 65,
-   "relvol": 0.4846090504497911,
-   "ziel": 27.219624214976488,
-   "stop": 27.040188464716344,
-   "ziel_pct": 0.441416353590009,
-   "stop_pct": -0.2207081767950045,
-   "zeit_utc": "2026-11-27 10:36:01+00:00",
-   "zeit_de": "2026-11-27 11:36:01",
-   "ende_utc": "2026-11-27 10:51:01+00:00"
+   "relvol": 0.4082078484405664,
+   "ziel": 17.7152822431097,
+   "stop": 17.57985887844515,
+   "ziel_pct": 0.5122396772181641,
+   "stop_pct": -0.25611983860908205,
+   "zeit_utc": "2026-11-27 11:32:19+00:00",
+   "zeit_de": "2026-11-27 12:32:19",
+   "ende_utc": "2026-11-27 11:47:19+00:00"
   }
  ],
  "ergebnisse": [
@@ -591,6 +592,21 @@
    "netto": -0.149,
    "hoch": 0.612,
    "tief": 0.17,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-27 11:36:01",
+   "ticker": "DTE.DE",
+   "score": 65,
+   "typ": "NORMAL",
+   "relvol": 0.4846090504497911,
+   "ziel_pct": 0.441,
+   "stop_pct": -0.221,
+   "ergebnis": "NICHTS",
+   "pct": 0.074,
+   "netto": -0.626,
+   "hoch": 0.148,
+   "tief": -0.148,
    "unvollstaendig": false
   }
  ]
