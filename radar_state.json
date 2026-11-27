@@ -12,22 +12,7 @@
    "VRTX"
   ]
  },
- "offen": [
-  {
-   "typ": "EXPLOSION",
-   "ticker": "VRTX",
-   "kurs": 528.3499755859375,
-   "score": 69,
-   "relvol": 3.0732892143058295,
-   "ziel": 532.832697786033,
-   "stop": 526.1086144858898,
-   "ziel_pct": 0.8484380443330455,
-   "stop_pct": -0.42421902216652274,
-   "zeit_utc": "2026-11-27 15:48:31+00:00",
-   "zeit_de": "2026-11-27 16:48:31",
-   "ende_utc": "2026-11-27 16:03:31+00:00"
-  }
- ],
+ "offen": [],
  "ergebnisse": [
   {
    "zeit_de": "2026-11-19 09:13:30",
@@ -627,6 +612,21 @@
    "netto": -0.615,
    "hoch": 0.17,
    "tief": 0.028,
+   "unvollstaendig": false
+  },
+  {
+   "zeit_de": "2026-11-27 16:48:31",
+   "ticker": "VRTX",
+   "score": 69,
+   "typ": "EXPLOSION",
+   "relvol": 3.0732892143058295,
+   "ziel_pct": 0.848,
+   "stop_pct": -0.424,
+   "ergebnis": "NICHTS",
+   "pct": 0.348,
+   "netto": -0.352,
+   "hoch": 0.721,
+   "tief": -0.331,
    "unvollstaendig": false
   }
  ]
